@@ -1,0 +1,58 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+#define MAX_SIZE 100
+
+int getPrecedence(char op) {
+    if (op == '+' || op == '-')
+        return 1;
+    if (op == '*' || op == '/')
+        return 2;
+    return 0;
+}
+
+void convertInfixToPostfix(const char *infix, char *postfix) {
+    char customStack[MAX_SIZE];
+    int stackTop = -1;
+    int i = 0, j = 0;
+
+    while (infix[i] != '\0') {
+        char c = infix[i++];
+
+        if (isalnum(c)) {
+            postfix[j++] = c;
+        } else if (c == '(') {
+            customStack[++stackTop] = c;
+        } else if (c == ')') {
+            while (stackTop >= 0 && customStack[stackTop] != '(') {
+                postfix[j++] = customStack[stackTop--];
+            }
+            stackTop--; // Pop the '('
+        } else if (c == '+' || c == '-' || c == '*' || c == '/') {
+            while (stackTop >= 0 && getPrecedence(customStack[stackTop]) >= getPrecedence(c)) {
+                postfix[j++] = customStack[stackTop--];
+            }
+            customStack[++stackTop] = c;
+        }
+    }
+
+    while (stackTop >= 0) {
+        postfix[j++] = customStack[stackTop--];
+    }
+
+    postfix[j] = '\0';
+}
+
+int main() {
+    char infixExpression[MAX_SIZE], postfixExpression[MAX_SIZE];
+    printf("Enter infix expression: ");
+    fgets(infixExpression, MAX_SIZE, stdin);
+
+    convertInfixToPostfix(infixExpression, postfixExpression);
+    printf("Postfix expression: %s\n", postfixExpression);
+
+    return 0;
+}
+
