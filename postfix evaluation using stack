@@ -1,0 +1,49 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+#define MAX_SIZE 100
+
+int calculate(int op1, int op2, char operator) {
+    switch (operator) {
+        case '+': return op1 + op2;
+        case '-': return op1 - op2;
+        case '*': return op1 * op2;
+        case '/': return op1 / op2;
+    }
+    return 0; // Invalid operator
+}
+
+int evaluatePostfix(const char *expression) {
+    int customStack[MAX_SIZE];
+    int top = -1;
+    int i = 0;
+
+    while (expression[i] != '\0') {
+        char c = expression[i++];
+        
+        if (isdigit(c)) {
+            customStack[++top] = c - '0'; // Convert char to int
+        } else if (c == '+' || c == '-' || c == '*' || c == '/') {
+            int operand2 = customStack[top--];
+            int operand1 = customStack[top--];
+            int result = calculate(operand1, operand2, c);
+            customStack[++top] = result;
+        }
+    }
+
+    return customStack[0];
+}
+
+int main() {
+    char postfixExp[MAX_SIZE];
+    printf("Enter postfix expression: ");
+    fgets(postfixExp, MAX_SIZE, stdin);
+
+    int result = evaluatePostfix(postfixExp);
+    printf("Result: %d\n", result);
+
+    return 0;
+}
+
