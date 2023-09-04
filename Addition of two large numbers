@@ -1,0 +1,106 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Node {
+    int data;
+    struct Node* next;
+} Node;
+
+Node* createNode(int value) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->data = value;
+    newNode->next = NULL;
+    return newNode;
+}
+
+Node* addLargeNumbers(Node* num1, Node* num2) {
+    Node* result = NULL;
+    Node* current = NULL;
+    int carry = 0;
+
+    while (num1 || num2 || carry) {
+        int sum = carry;
+        if (num1) {
+            sum += num1->data;
+            num1 = num1->next;
+        }
+        if (num2) {
+            sum += num2->data;
+            num2 = num2->next;
+        }
+
+        if (result == NULL) {
+            result = createNode(sum % 10);
+            current = result;
+        } else {
+            current->next = createNode(sum % 10);
+            current = current->next;
+        }
+
+        carry = sum / 10;
+    }
+
+    return result;
+}
+
+void printReversedLinkedList(Node* head) {
+    if (head == NULL) {
+        return;
+    }
+
+    printReversedLinkedList(head->next);
+    printf("%d", head->data);
+}
+
+Node* createLinkedListFromNumber(int number) {
+    Node* head = NULL;
+
+    if (number == 0) {
+        return createNode(0);
+    }
+
+    while (number > 0) {
+        int digit = number % 10;
+        Node* newNode = createNode(digit);
+        
+        if (head == NULL) {
+            head = newNode;
+        } else {
+            newNode->next = head;
+            head = newNode;
+        }
+
+        number /= 10;
+    }
+
+    return head;
+}
+
+int main() {
+    int num1, num2;
+    printf("Enter the first number: ");
+    scanf("%d", &num1);
+
+    printf("Enter the second number: ");
+    scanf("%d", &num2);
+
+    Node* num1List = createLinkedListFromNumber(num1);
+    Node* num2List = createLinkedListFromNumber(num2);
+
+    Node* sum = addLargeNumbers(num1List, num2List);
+
+    printf("Number 1: ");
+    printReversedLinkedList(num1List);
+    printf("\n");
+
+    printf("Number 2: ");
+    printReversedLinkedList(num2List);
+    printf("\n");
+
+    printf("Sum: ");
+    printReversedLinkedList(sum);
+    printf("\n");
+
+    return 0;
+}
+
