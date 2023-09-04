@@ -1,0 +1,82 @@
+#include <stdio.h>
+
+// Structure to represent a term in a polynomial
+struct Term {
+    int coefficient;
+    int exponent;
+};
+
+// Function to input a polynomial
+void inputPoly(struct Term poly[], int n) {
+    for (int i = 0; i < n; i++) {
+        printf("Enter coefficient and exponent for term %d: ", i + 1);
+        scanf("%d %d", &poly[i].coefficient, &poly[i].exponent);
+    }
+}
+
+// Function to add like terms in a polynomial
+void addLikeTerms(struct Term poly[], int n) {
+    for (int i = 0; i < n; i++) {
+        if (poly[i].coefficient == 0) {
+            continue; // Skip terms with coefficient 0
+        }
+        for (int j = i + 1; j < n; j++) {
+            if (poly[i].exponent == poly[j].exponent) {
+                poly[i].coefficient += poly[j].coefficient;
+                poly[j].coefficient = 0; // Mark the term as combined
+            }
+        }
+    }
+}
+
+// Function to multiply two polynomials and add like terms
+void multiplyAndAddPoly(struct Term poly1[], int n1, struct Term poly2[], int n2, struct Term result[], int *nr) {
+    *nr = 0; // Initialize the result polynomial term count
+
+    for (int i = 0; i < n1; i++) {
+        for (int j = 0; j < n2; j++) {
+            result[*nr].coefficient = poly1[i].coefficient * poly2[j].coefficient;
+            result[*nr].exponent = poly1[i].exponent + poly2[j].exponent;
+            (*nr)++; // Increment the result term count
+        }
+    }
+    
+    addLikeTerms(result, *nr);
+}
+
+// Function to display a polynomial
+void displayPoly(struct Term poly[], int n) {
+    for (int i = 0; i < n; i++) {
+        if (poly[i].coefficient != 0) {
+            printf("(%d)x^%d", poly[i].coefficient, poly[i].exponent);
+            if (i < n - 1) {
+                printf(" + ");
+            }
+        }
+    }
+    printf("\n");
+}
+
+int main() {
+    int n1, n2;
+    printf("Enter the number of terms in the first polynomial: ");
+    scanf("%d", &n1);
+    struct Term poly1[n1];
+    inputPoly(poly1, n1);
+
+    printf("Enter the number of terms in the second polynomial: ");
+    scanf("%d", &n2);
+    struct Term poly2[n2];
+    inputPoly(poly2, n2);
+
+    struct Term result[n1 * n2 * 2]; // Double the size for potential terms
+    int resultCount;
+    multiplyAndAddPoly(poly1, n1, poly2, n2, result, &resultCount);
+
+    printf("Resultant Polynomial: ");
+    displayPoly(result, resultCount);
+
+    return 0;
+}
+
+
