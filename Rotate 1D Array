@@ -1,0 +1,121 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int coef;
+    int exp;
+    struct Node* next;
+};
+
+typedef struct Node Node;
+
+Node* createNode(int coef, int exp) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->coef = coef;
+    newNode->exp = exp;
+    newNode->next = NULL;
+    return newNode;
+}
+
+Node* addPoly(Node* poly1, Node* poly2) {
+    Node* result = NULL;
+    Node* current = NULL;  // Pointer to the current node in the result list
+
+    while (poly1 != NULL || poly2 != NULL) {
+        Node* newTerm = NULL;
+
+        if (poly1 == NULL || (poly2 != NULL && poly1->exp < poly2->exp)) {
+            newTerm = createNode(poly2->coef, poly2->exp);
+            poly2 = poly2->next;
+        } else if (poly2 == NULL || poly1->exp > poly2->exp) {
+            newTerm = createNode(poly1->coef, poly1->exp);
+            poly1 = poly1->next;
+        } else {
+            int sum = poly1->coef + poly2->coef;
+            if (sum != 0) {
+                newTerm = createNode(sum, poly1->exp);
+            }
+            poly1 = poly1->next;
+            poly2 = poly2->next;
+        }
+
+        if (newTerm != NULL) {
+            if (result == NULL) {
+                result = newTerm;
+                current = result;
+            } else {
+                current->next = newTerm;
+                current = current->next;
+            }
+        }
+    }
+
+    return result;
+}
+
+void displayPoly(Node* poly) {
+    while (poly != NULL) {
+        printf("%dx^%d", poly->coef, poly->exp);
+        poly = poly->next;
+        if (poly != NULL) {
+            printf(" + ");
+        }
+    }
+    printf("\n");
+}
+
+int main() {
+    Node* poly1 = NULL;
+    Node* poly2 = NULL;
+    Node* result = NULL;
+    int n1, n2;
+    
+    printf("Enter the number of terms in the first polynomial: ");
+    scanf("%d", &n1);
+    for (int i = 0; i < n1; i++) {
+        int coef, exp;
+        printf("Enter coefficient and exponent for term %d: ", i + 1);
+        scanf("%d %d", &coef, &exp);
+        Node* newTerm = createNode(coef, exp);
+        if (poly1 == NULL) {
+            poly1 = newTerm;
+        } else {
+            Node* temp = poly1;
+            while (temp->next != NULL) {
+                temp = temp->next;
+            }
+            temp->next = newTerm;
+        }
+    }
+
+    printf("Enter the number of terms in the second polynomial: ");
+    scanf("%d", &n2);
+    for (int i = 0; i < n2; i++) {
+        int coef, exp;
+        printf("Enter coefficient and exponent for term %d: ", i + 1);
+        scanf("%d %d", &coef, &exp);
+        Node* newTerm = createNode(coef, exp);
+        if (poly2 == NULL) {
+            poly2 = newTerm;
+        } else {
+            Node* temp = poly2;
+            while (temp->next != NULL) {
+                temp = temp->next;
+            }
+            temp->next = newTerm;
+        }
+    }
+
+    printf("First polynomial: ");
+    displayPoly(poly1);
+
+    printf("Second polynomial: ");
+    displayPoly(poly2);
+
+    result = addPoly(poly1, poly2);
+    printf("Resultant polynomial after addition: ");
+    displayPoly(result);
+
+    return 0;
+}
+
