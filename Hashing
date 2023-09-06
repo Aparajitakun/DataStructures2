@@ -1,0 +1,97 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <time.h>
+
+#define MAX_SIZE 10000 // Adjust the maximum size as needed
+
+typedef struct {
+    int data[MAX_SIZE]; // Dynamic array to store elements
+    int index_map[MAX_SIZE]; // Hash map to store element indices
+    int size; // Current size of the data structure
+} RandomizedSet;
+
+RandomizedSet* randomizedSetCreate() {
+    RandomizedSet* obj = (RandomizedSet*)malloc(sizeof(RandomizedSet));
+    obj->size = 0;
+    for (int i = 0; i < MAX_SIZE; i++) {
+        obj->index_map[i] = -1; // Initialize index_map to -1 (indicating not present)
+    }
+    return obj;
+}
+
+bool randomizedSetInsert(RandomizedSet* obj, int val) {
+    if (obj->size >= MAX_SIZE || obj->index_map[val] != -1) {
+        return false; // Reached maximum capacity or value already present
+    }
+    
+    // Insert val at the end of the data array
+    obj->data[obj->size] = val;
+    obj->index_map[val] = obj->size;
+    obj->size++;
+    
+    return true;
+}
+
+bool randomizedSetRemove(RandomizedSet* obj, int val) {
+    if (obj->index_map[val] == -1) {
+        return false; // Value not found
+    }
+    
+    // Swap the value to be removed with the last element
+    int idx = obj->index_map[val];
+    int last_val = obj->data[obj->size - 1];
+    
+    obj->data[idx] = last_val;
+    obj->index_map[last_val] = idx;
+    
+    // Mark the removed value as not present
+    obj->index_map[val] = -1;
+    obj->size--;
+    
+    return true;
+}
+
+int randomizedSetGetRandom(RandomizedSet* obj) {
+    if (obj->size == 0) {
+        return 0; // Empty data structure, return 0 as a placeholder
+    }
+    
+    // Generate a random index within the current size
+    int random_idx = rand() % obj->size;
+    
+    // Return the element at the randomly generated index
+    return obj->data[random_idx];
+}
+
+bool randomizedSetSearch(RandomizedSet* obj, int val) {
+    return (obj->index_map[val] != -1);
+}
+
+void randomizedSetFree(RandomizedSet* obj) {
+    free(obj);
+}
+
+int main() {
+    srand(time(NULL)); // Initialize random seed
+    
+    RandomizedSet* obj = randomizedSetCreate();
+    
+    randomizedSetInsert(obj, 1);
+    randomizedSetInsert(obj, 2);
+    randomizedSetInsert(obj, 3);
+    
+    printf("Search 2: %s\n", randomizedSetSearch(obj, 2) ? "Found" : "Not Found");
+    printf("Search 4: %s\n", randomizedSetSearch(obj, 4) ? "Found" : "Not Found");
+    
+    randomizedSetRemove(obj, 2);
+    
+    printf("Search 2: %s\n", randomizedSetSearch(obj, 2) ? "Found" : "Not Found");
+    
+    int random_val = randomizedSetGetRandom(obj);
+    printf("Random Value: %d\n", random_val);
+    
+    randomizedSetFree(obj);
+    
+    return 0;
+}
