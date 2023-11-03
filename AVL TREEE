@@ -1,0 +1,122 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int key;
+    struct Node* lft;
+    struct Node* rght;
+    int ht;
+};
+
+int ht(struct Node* node) {
+    if (node == NULL)
+        return 0;
+    return node->ht;
+}
+
+int max(int a, int b) {
+    return (a > b) ? a : b;
+}
+
+struct Node* inst(int key) {
+    struct Node* node = (struct Node*)malloc(sizeof(struct Node));
+    node->key = key;
+    node->lft = NULL;
+    node->rght = NULL;
+    node->ht = 1;
+    return (node);
+}
+
+struct Node* rghtRotate(struct Node* y) {
+    struct Node* x = y->lft;
+    struct Node* T2 = x->rght;
+
+    x->rght = y;
+    y->lft = T2;
+
+    y->ht = max(ht(y->lft), ht(y->rght)) + 1;
+    x->ht = max(ht(x->lft), ht(x->rght)) + 1;
+
+    return x;
+}
+
+struct Node* lftRotate(struct Node* x) {
+    struct Node* y = x->rght;
+    struct Node* T2 = y->lft;
+
+    y->lft = x;
+    x->rght = T2;
+
+    x->ht = max(ht(x->lft), ht(x->rght)) + 1;
+    y->ht = max(ht(y->lft), ht(y->rght)) + 1;
+
+    return y;
+}
+
+int balan(struct Node* node) {
+    if (node == NULL)
+        return 0;
+    return ht(node->lft) - ht(node->rght);
+}
+
+struct Node* insert(struct Node* root, int key) {
+    if (root == NULL)
+        return inst(key);
+
+    if (key < root->key)
+        root->lft = insert(root->lft, key);
+    else if (key > root->key)
+        root->rght = insert(root->rght, key);
+    else
+        return root;
+
+    root->ht = 1 + max(ht(root->lft), ht(root->rght));
+
+    int balance = balan(root);
+
+    if (balance > 1) {
+        if (key < root->lft->key) {
+            return rghtRotate(root);
+        } else {
+            root->lft = lftRotate(root->lft);
+            return rghtRotate(root);
+        }
+    }
+    if (balance < -1) {
+        if (key > root->rght->key) {
+            return lftRotate(root);
+        } else {
+            root->rght = rghtRotate(root->rght);
+            return lftRotate(root);
+        }
+
+    }
+    return root;
+}
+
+void inor(struct Node* root) {
+    if (root != NULL) {
+        inor(root->lft);
+        printf("%d ", root->key);
+        inor(root->rght);
+    }
+}
+
+int main() {
+    struct Node* root = NULL;
+    int n, key;
+
+    printf("Enter the number of elements to insert: ");
+    scanf("%d", &n);
+
+    printf("Enter the elements to insert:\n");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &key);
+        root = insert(root, key);
+    }
+
+    printf("In-order traversal of AVL tree: ");
+    inor(root);
+
+    return 0;
+}
