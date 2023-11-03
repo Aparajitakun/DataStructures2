@@ -1,0 +1,110 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Define the structure for a node in the priority queue
+struct Node {
+    int value;
+    int priority;
+    struct Node* next;
+};
+
+// Function to create a new node
+struct Node* createNode(int value, int priority) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->value = value;
+    newNode->priority = priority;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Function to insert an element into the priority queue
+void insert(struct Node** head, int value, int priority) {
+    struct Node* newNode = createNode(value, priority);
+    if (*head == NULL || priority < (*head)->priority) {
+        newNode->next = *head;
+        *head = newNode;
+    } else {
+        struct Node* current = *head;
+        while (current->next != NULL && current->next->priority <= priority) {
+            current = current->next;
+        }
+        newNode->next = current->next;
+        current->next = newNode;
+    }
+}
+
+// Function to delete the element with the highest priority (top element)
+void deleteTop(struct Node** head) {
+    if (*head == NULL) {
+        printf("Priority queue is empty.\n");
+        return;
+    }
+    struct Node* temp = *head;
+    *head = (*head)->next;
+    free(temp);
+}
+
+// Function to get the top element (element with the highest priority)
+int getTop(struct Node* head) {
+    if (head == NULL) {
+        printf("Priority queue is empty.\n");
+        return -1;
+    }
+    return head->value;
+}
+
+// Function to display the priority queue
+void display(struct Node* head) {
+    if (head == NULL) {
+        printf("Priority queue is empty.\n");
+        return;
+    }
+    struct Node* current = head;
+    printf("Priority Queue: ");
+    while (current != NULL) {
+        printf("(%d, %d) ", current->value, current->priority);
+        current = current->next;
+    }
+    printf("\n");
+}
+
+int main() {
+    struct Node* head = NULL;
+    int choice, value, priority;
+
+    while (1) {
+        printf("\nPriority Queue Operations:\n");
+        printf("1. Insert\n");
+        printf("2. Delete Top\n");
+        printf("3. Get Top\n");
+        printf("4. Display\n");
+        printf("5. Quit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter value: ");
+                scanf("%d", &value);
+                printf("Enter priority: ");
+                scanf("%d", &priority);
+                insert(&head, value, priority);
+                break;
+            case 2:
+                deleteTop(&head);
+                break;
+            case 3:
+                printf("Top element: %d\n", getTop(head));
+                break;
+            case 4:
+                display(head);
+                break;
+            case 5:
+                exit(0);
+            default:
+                printf("Invalid choice.\n");
+        }
+    }
+
+    return 0;
+}
