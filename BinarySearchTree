@@ -1,0 +1,211 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+struct Node
+{
+  struct Node *leftChild;
+  int data;
+  struct Node *rightChild;
+};
+
+struct Node *newNode(int item)
+{
+  struct Node *newNodePtr = (struct Node *)malloc(sizeof(struct Node));
+  newNodePtr->data = item;
+  newNodePtr->leftChild = NULL;
+  newNodePtr->rightChild = NULL;
+  return newNodePtr;
+}
+
+struct Node *insert_BST(struct Node *root, int item)
+{
+  if (root == NULL) {
+    root = newNode(item);
+  } else {
+    if (item < root->data) {
+      root->leftChild = insert_BST(root->leftChild, item);
+    } else {
+      root->rightChild = insert_BST(root->rightChild, item);
+    }
+  }
+  return root;
+}
+
+void displayBST(struct Node *root)
+{
+  if (root != NULL) {
+    displayBST(root->leftChild);
+    printf("%d ", root->data);
+    displayBST(root->rightChild);
+  }
+}
+
+int minBST(struct Node *root)
+{
+  if (root == NULL) {
+    printf("Empty Tree");
+    return -1;
+  } else if (root->leftChild == NULL) {
+    return root->data;
+  } else {
+    return minBST(root->leftChild);
+  }
+}
+
+int maxBST(struct Node *root)
+{
+  if (root == NULL) {
+    printf("Empty Tree");
+    return -1;
+  } else if (root->rightChild == NULL) {
+    return root->data;
+  } else {
+    return maxBST(root->rightChild);
+  }
+}
+
+int heightBST(struct Node *root)
+{
+  if (root == NULL) {
+    return -1;
+  } else {
+    int leftHT = heightBST(root->leftChild);
+    int rightHT = heightBST(root->rightChild);
+    if (leftHT > rightHT) {
+      return (leftHT + 1);
+    } else {
+      return (rightHT + 1);
+    }
+  }
+}
+
+bool searchBST(struct Node *root, int item)
+{
+  if (root == NULL) {
+    return false;
+  } else if (root->data == item) {
+    return true;
+  } else if (item < root->data) {
+    return searchBST(root->leftChild, item);
+  } else {
+    return searchBST(root->rightChild, item);
+  }
+}
+
+void preorder(struct Node *root)
+{
+  if (root == NULL) {
+    return;
+  }
+
+  printf("%d ", root->data);
+  preorder(root->leftChild);
+  preorder(root->rightChild);
+}
+
+void inorder(struct Node *root)
+{
+  if (root == NULL) {
+    return;
+  }
+
+  inorder(root->leftChild);
+  printf("%d ", root->data);
+  inorder(root->rightChild);
+}
+
+void postorder(struct Node *root)
+{
+  if (root == NULL) {
+    return;
+  }
+
+  postorder(root->leftChild);
+  postorder(root->rightChild);
+  printf("%d ", root->data);
+}
+
+int main()
+{
+  struct Node *root = NULL;
+  int value, choice;
+
+  do {
+    printf("Binary Search Tree Menu:\n");
+        printf("1. Insert\n");
+    printf("2. Display\n");
+    printf("3. Find Minimum\n");
+    printf("4. Find Maximum\n");
+    printf("5. Height of BST\n");
+    printf("6. Search\n");
+    printf("7. Preorder\n");
+    printf("8. Inorder\n");
+    printf("9. Postorder\n");
+    printf("0. Exit\n");
+    printf("Enter your choice: ");
+    scanf("%d", &choice);
+
+    switch(choice) {
+      case 0:
+        printf("Exiting the program.\n");
+        break;
+      case 1:
+        printf("Enter the value to be inserted: ");
+        scanf("%d", &value);
+        root = insert_BST(root, value);
+        printf("BST after insertion: ");
+        displayBST(root);
+        printf("\n");
+        break;
+      case 2:
+        printf("BST elements in order: ");
+        displayBST(root);
+        printf("\n");
+        break;
+      case 3:
+        value = minBST(root);
+        printf("Minimum value in BST: %d\n", value);
+        break;
+      case 4:
+        value = maxBST(root);
+        printf("Maximum value in BST: %d\n", value);
+        break;
+      case 5:
+        value = heightBST(root);
+        printf("Height of BST: %d\n", value);
+        break;
+      case 6:
+        printf("Enter the value to search: ");
+        scanf("%d", &value);
+        if (searchBST(root, value)) {
+          printf("Item %d found in BST.\n", value);
+        } else {
+          printf("Item %d not found in BST.\n", value);
+        }
+        break;
+      case 7:
+        printf("Preorder of BST: ");
+        preorder(root);
+        printf("\n");
+        break;
+      case 8:
+        printf("Inorder of BST: ");
+        inorder(root);
+        printf("\n");
+        break;
+      case 9:
+        printf("Postorder of BST: ");
+        postorder(root);
+        printf("\n");
+        break;
+      default:
+        printf("Invalid choice. Please try again.\n");
+    }
+  } while (choice != 0);
+
+  return 0;
+}
+
+bst2.c
+Displaying bst2.c.
